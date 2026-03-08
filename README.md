@@ -1,6 +1,6 @@
-# kodi-docker
-
 **English** | [简体中文](README.zh-CN.md)
+
+# Kodi Docker
 
 Run Kodi in Docker with Linux HDMI output. The image is built from the official upstream Kodi release source, defaults to the latest official tag at build time, ships X11, Wayland, and DRM/GBM in one image, builds the official binary add-on tree by default, and publishes the common remote-control ports without changing Kodi's official service defaults.
 

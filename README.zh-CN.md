@@ -1,6 +1,6 @@
-# kodi-docker
-
 [English](README.md) | **简体中文**
+
+# Kodi Docker
 
 在 Linux 上通过 Docker 运行 Kodi，并支持 HDMI 输出。镜像改为基于 Kodi 官方上游 release 源码构建，默认在构建时解析官方最新 tag，单镜像同时支持 X11、Wayland、DRM/GBM，默认编译官方二进制 add-on 集合，并默认开放常用远程控制端口，但不改动 Kodi 官方默认服务状态。
 
