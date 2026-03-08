@@ -45,7 +45,7 @@ jobs:
           HOST_XDG_RUNTIME_DIR: "${{ github.workspace }}/.ci/runtime"
           WAYLAND_DISPLAY: "wayland-0"
           LOCAL_UID: "1000"
-          LOCAL_GID: "1000"
+          LOCAL_GID: "1001"
         run: |
           docker compose -f compose.yaml -f compose.x11.yaml config >/dev/null
           docker compose -f compose.yaml -f compose.wayland.yaml config >/dev/null
@@ -66,6 +66,9 @@ jobs:
           platforms: linux/amd64
           load: true
           push: false
+          build-args: |
+            KODI_VERSION=latest
+            KODI_BUILD_BINARY_ADDONS=0
           tags: kodi-docker:ci
 
       - name: Dry-run matrix
@@ -73,14 +76,14 @@ jobs:
           docker run --rm \
             -e DISPLAY=:0 \
             -e LOCAL_UID=1000 \
-            -e LOCAL_GID=1000 \
+            -e LOCAL_GID=1001 \
             -e KODI_DRY_RUN=1 \
             kodi-docker:ci
 
           docker run --rm \
             -e DISPLAY=:0 \
             -e LOCAL_UID=1000 \
-            -e LOCAL_GID=1000 \
+            -e LOCAL_GID=1001 \
             -e KODI_AUDIO_BACKEND=pulseaudio \
             -e KODI_RENDERER=software \
             -e KODI_DRY_RUN=1 \
@@ -90,7 +93,7 @@ jobs:
             -e KODI_VIDEO_BACKEND=wayland \
             -e WAYLAND_DISPLAY=wayland-0 \
             -e LOCAL_UID=1000 \
-            -e LOCAL_GID=1000 \
+            -e LOCAL_GID=1001 \
             -e KODI_AUDIO_BACKEND=pipewire \
             -e KODI_DRY_RUN=1 \
             kodi-docker:ci
@@ -98,7 +101,7 @@ jobs:
           docker run --rm \
             -e KODI_VIDEO_BACKEND=drm \
             -e LOCAL_UID=1000 \
-            -e LOCAL_GID=1000 \
+            -e LOCAL_GID=1001 \
             -e KODI_DRY_RUN=1 \
             kodi-docker:ci
 
@@ -107,6 +110,6 @@ jobs:
             -e KODI_AUDIO_BACKEND=pipewire \
             -e KODI_RENDERER=software \
             -e LOCAL_UID=1000 \
-            -e LOCAL_GID=1000 \
+            -e LOCAL_GID=1001 \
             -e KODI_DRY_RUN=1 \
             kodi-docker:ci

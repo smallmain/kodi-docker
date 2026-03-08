@@ -1,24 +1,30 @@
 services:
   kodi:
-    image: "${IMAGE_NAME:-ghcr.io/your-org/kodi-docker}:${IMAGE_TAG:-main}"
+    image: "${IMAGE_NAME:-ghcr.io/smallmain/kodi-docker}:${IMAGE_TAG:-main}"
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        KODI_VERSION: "${KODI_VERSION:-latest}"
+        KODI_BUILD_JOBS: "${KODI_BUILD_JOBS:-0}"
+        KODI_BUILD_BINARY_ADDONS: "${KODI_BUILD_BINARY_ADDONS:-1}"
     restart: unless-stopped
     environment:
       TZ: "${TZ:-UTC}"
       LOCAL_UID: "${LOCAL_UID:-1000}"
-      LOCAL_GID: "${LOCAL_GID:-1000}"
+      LOCAL_GID: "${LOCAL_GID:-1001}"
       KODI_VIDEO_BACKEND: "${KODI_VIDEO_BACKEND:-x11}"
       KODI_AUDIO_BACKEND: "${KODI_AUDIO_BACKEND:-alsa}"
       KODI_RENDERER: "${KODI_RENDERER:-auto}"
       KODI_EXTRA_ARGS: "${KODI_EXTRA_ARGS:-}"
+      KODI_EXECUTABLE: "${KODI_EXECUTABLE:-}"
     devices:
       - /dev/snd:/dev/snd
     ports:
-      - "8080:8080/tcp"
-      - "9090:9090/tcp"
-      - "9777:9777/udp"
+      - "${KODI_HTTP_PORT:-8080}:8080/tcp"
+      - "${KODI_JSONRPC_PORT:-9090}:9090/tcp"
+      - "${KODI_EVENTSERVER_PORT:-9777}:9777/udp"
+      - "${KODI_SSDP_PORT:-1900}:1900/udp"
     volumes:
       - ./config:/config
       - ./media:/media

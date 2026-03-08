@@ -2,8 +2,16 @@ services:
   kodi:
     stdin_open: true
     tty: true
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - SYS_RAWIO
+    security_opt:
+      - seccomp:unconfined
     environment:
       KODI_VIDEO_BACKEND: drm
     devices:
       - /dev/dri:/dev/dri
       - /dev/input:/dev/input
+    volumes:
+      - /run/udev:/run/udev:ro

@@ -77,6 +77,45 @@ print_command() {
   printf '\n'
 }
 
+resolve_kodi_executable() {
+  local backend="$1"
+  local explicit_executable="${KODI_EXECUTABLE:-}"
+  local -a candidates=()
+  local candidate
+
+  if [[ -n "${explicit_executable}" ]]; then
+    if command -v "${explicit_executable}" >/dev/null 2>&1; then
+      printf '%s' "${explicit_executable}"
+      return 0
+    fi
+    die "KODI_EXECUTABLE is set but not found in PATH: ${explicit_executable}"
+  fi
+
+  case "${backend}" in
+    x11)
+      candidates=(kodi-x11 kodi)
+      ;;
+    wayland)
+      candidates=(kodi-wayland kodi)
+      ;;
+    drm)
+      candidates=(kodi-gbm kodi-standalone kodi)
+      ;;
+    *)
+      die "unsupported backend while resolving Kodi executable: ${backend}"
+      ;;
+  esac
+
+  for candidate in "${candidates[@]}"; do
+    if command -v "${candidate}" >/dev/null 2>&1; then
+      printf '%s' "${candidate}"
+      return 0
+    fi
+  done
+
+  die "unable to find a Kodi executable for backend ${backend}; tried: ${candidates[*]}"
+}
+
 if [[ $# -gt 0 ]]; then
   exec "$@"
 fi
@@ -86,6 +125,7 @@ KODI_AUDIO_BACKEND="${KODI_AUDIO_BACKEND:-alsa}"
 KODI_RENDERER="${KODI_RENDERER:-auto}"
 KODI_EXTRA_ARGS="${KODI_EXTRA_ARGS:-}"
 KODI_DRY_RUN="${KODI_DRY_RUN:-0}"
+KODI_EXECUTABLE="${KODI_EXECUTABLE:-}"
 LOCAL_UID="${LOCAL_UID:-}"
 LOCAL_GID="${LOCAL_GID:-}"
 WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
@@ -146,17 +186,24 @@ if [[ "${KODI_RENDERER}" == "software" ]]; then
 fi
 
 declare -a kodi_args
-kodi_args=(kodi)
+resolved_kodi_executable="$(resolve_kodi_executable "${KODI_VIDEO_BACKEND}")"
+kodi_args=("${resolved_kodi_executable}")
 
 case "${KODI_VIDEO_BACKEND}" in
   x11)
-    kodi_args+=(--windowing=x11)
+    if [[ "${resolved_kodi_executable}" == "kodi" ]]; then
+      kodi_args+=(--windowing=x11)
+    fi
     ;;
   wayland)
-    kodi_args+=(--windowing=wayland)
+    if [[ "${resolved_kodi_executable}" == "kodi" ]]; then
+      kodi_args+=(--windowing=wayland)
+    fi
     ;;
   drm)
-    kodi_args+=(--windowing=gbm --standalone)
+    if [[ "${resolved_kodi_executable}" == "kodi" ]]; then
+      kodi_args+=(--windowing=gbm --standalone)
+    fi
     ;;
 esac
 
@@ -171,7 +218,7 @@ fi
 if [[ -n "${LOCAL_UID}" || -n "${LOCAL_GID}" ]]; then
   runtime_group=""
   LOCAL_UID="${LOCAL_UID:-1000}"
-  LOCAL_GID="${LOCAL_GID:-1000}"
+  LOCAL_GID="${LOCAL_GID:-1001}"
   require_integer "LOCAL_UID" "${LOCAL_UID}"
   require_integer "LOCAL_GID" "${LOCAL_GID}"
   runtime_group="$(ensure_group_gid "${LOCAL_GID}")"
@@ -185,6 +232,7 @@ fi
 log "video backend: ${KODI_VIDEO_BACKEND}"
 log "audio backend: ${KODI_AUDIO_BACKEND}"
 log "renderer: ${KODI_RENDERER}"
+log "executable: ${resolved_kodi_executable}"
 
 if [[ "${KODI_DRY_RUN}" == "1" ]]; then
   print_command "${kodi_args[@]}"
