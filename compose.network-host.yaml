@@ -1,0 +1,4 @@
+services:
+  kodi:
+    network_mode: host
+    ports: []

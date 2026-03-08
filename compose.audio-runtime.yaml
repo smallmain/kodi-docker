@@ -1,0 +1,7 @@
+services:
+  kodi:
+    environment:
+      XDG_RUNTIME_DIR: /tmp/host-runtime
+      PULSE_SERVER: "${PULSE_SERVER:-unix:/tmp/host-runtime/pulse/native}"
+    volumes:
+      - ${HOST_XDG_RUNTIME_DIR:-/run/user/1000}:/tmp/host-runtime

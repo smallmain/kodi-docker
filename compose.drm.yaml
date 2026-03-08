@@ -1,0 +1,9 @@
+services:
+  kodi:
+    stdin_open: true
+    tty: true
+    environment:
+      KODI_VIDEO_BACKEND: drm
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/input:/dev/input

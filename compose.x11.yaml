@@ -1,0 +1,11 @@
+services:
+  kodi:
+    environment:
+      DISPLAY: "${DISPLAY:-:0}"
+      XAUTHORITY: /tmp/.docker.xauth
+      KODI_VIDEO_BACKEND: "${KODI_VIDEO_BACKEND:-x11}"
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-/tmp/.docker.xauth}:/tmp/.docker.xauth:ro

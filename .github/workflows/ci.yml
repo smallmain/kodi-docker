@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Prepare placeholders
+        run: |
+          mkdir -p config media .ci/runtime/pulse
+          touch .ci/xauth
+
+      - name: Run shellcheck
+        run: |
+          docker run --rm \
+            --volume "${PWD}:/workspace" \
+            --workdir /workspace \
+            koalaman/shellcheck:stable \
+            docker/entrypoint.sh
+
+      - name: Run hadolint
+        run: |
+          docker run --rm \
+            --volume "${PWD}:/workspace" \
+            --workdir /workspace \
+            ghcr.io/hadolint/hadolint:latest \
+            Dockerfile
+
+      - name: Validate compose combinations
+        env:
+          DISPLAY: ":0"
+          XAUTHORITY: "${{ github.workspace }}/.ci/xauth"
+          HOST_XDG_RUNTIME_DIR: "${{ github.workspace }}/.ci/runtime"
+          WAYLAND_DISPLAY: "wayland-0"
+          LOCAL_UID: "1000"
+          LOCAL_GID: "1000"
+        run: |
+          docker compose -f compose.yaml -f compose.x11.yaml config >/dev/null
+          docker compose -f compose.yaml -f compose.wayland.yaml config >/dev/null
+          docker compose -f compose.yaml -f compose.drm.yaml config >/dev/null
+          docker compose -f compose.yaml -f compose.x11.yaml -f compose.network-host.yaml config >/dev/null
+          docker compose -f compose.yaml -f compose.x11.yaml -f compose.audio-runtime.yaml config >/dev/null
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build amd64 smoke image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: kodi-docker:ci
+
+      - name: Dry-run matrix
+        run: |
+          docker run --rm \
+            -e DISPLAY=:0 \
+            -e LOCAL_UID=1000 \
+            -e LOCAL_GID=1000 \
+            -e KODI_DRY_RUN=1 \
+            kodi-docker:ci
+
+          docker run --rm \
+            -e DISPLAY=:0 \
+            -e LOCAL_UID=1000 \
+            -e LOCAL_GID=1000 \
+            -e KODI_AUDIO_BACKEND=pulseaudio \
+            -e KODI_RENDERER=software \
+            -e KODI_DRY_RUN=1 \
+            kodi-docker:ci
+
+          docker run --rm \
+            -e KODI_VIDEO_BACKEND=wayland \
+            -e WAYLAND_DISPLAY=wayland-0 \
+            -e LOCAL_UID=1000 \
+            -e LOCAL_GID=1000 \
+            -e KODI_AUDIO_BACKEND=pipewire \
+            -e KODI_DRY_RUN=1 \
+            kodi-docker:ci
+
+          docker run --rm \
+            -e KODI_VIDEO_BACKEND=drm \
+            -e LOCAL_UID=1000 \
+            -e LOCAL_GID=1000 \
+            -e KODI_DRY_RUN=1 \
+            kodi-docker:ci
+
+          docker run --rm \
+            -e KODI_VIDEO_BACKEND=drm \
+            -e KODI_AUDIO_BACKEND=pipewire \
+            -e KODI_RENDERER=software \
+            -e LOCAL_UID=1000 \
+            -e LOCAL_GID=1000 \
+            -e KODI_DRY_RUN=1 \
+            kodi-docker:ci

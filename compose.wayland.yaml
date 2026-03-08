@@ -1,0 +1,10 @@
+services:
+  kodi:
+    environment:
+      KODI_VIDEO_BACKEND: wayland
+      WAYLAND_DISPLAY: "${WAYLAND_DISPLAY:-wayland-0}"
+      XDG_RUNTIME_DIR: /tmp/host-runtime
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ${HOST_XDG_RUNTIME_DIR:-/run/user/1000}:/tmp/host-runtime

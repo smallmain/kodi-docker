@@ -1,0 +1,24 @@
+services:
+  kodi:
+    image: "${IMAGE_NAME:-ghcr.io/your-org/kodi-docker}:${IMAGE_TAG:-main}"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ:-UTC}"
+      LOCAL_UID: "${LOCAL_UID:-1000}"
+      LOCAL_GID: "${LOCAL_GID:-1000}"
+      KODI_VIDEO_BACKEND: "${KODI_VIDEO_BACKEND:-x11}"
+      KODI_AUDIO_BACKEND: "${KODI_AUDIO_BACKEND:-alsa}"
+      KODI_RENDERER: "${KODI_RENDERER:-auto}"
+      KODI_EXTRA_ARGS: "${KODI_EXTRA_ARGS:-}"
+    devices:
+      - /dev/snd:/dev/snd
+    ports:
+      - "8080:8080/tcp"
+      - "9090:9090/tcp"
+      - "9777:9777/udp"
+    volumes:
+      - ./config:/config
+      - ./media:/media
