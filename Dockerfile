@@ -41,6 +41,7 @@ RUN set -eux; \
       libdisplay-info-dev \
       libgbm-dev \
       libinput-dev \
+      libpcre3-dev \
       libwayland-dev \
       libxkbcommon-dev \
       wayland-protocols \

@@ -32,11 +32,9 @@ jobs:
 
       - name: Run hadolint
         run: |
-          docker run --rm \
-            --volume "${PWD}:/workspace" \
-            --workdir /workspace \
+          docker run --rm -i \
             ghcr.io/hadolint/hadolint:latest \
-            Dockerfile
+            < Dockerfile
 
       - name: Validate compose combinations
         env:
