@@ -42,6 +42,7 @@ RUN set -eux; \
       libgbm-dev \
       libinput-dev \
       libpcre3-dev \
+      libtinyxml2-dev \
       libwayland-dev \
       libxkbcommon-dev \
       wayland-protocols \
