@@ -1,5 +1,7 @@
 # kodi-docker
 
+**English** | [简体中文](README.zh-CN.md)
+
 Run Kodi in Docker with Linux HDMI output. The image is built from the official upstream Kodi release source, defaults to the latest official tag at build time, ships X11, Wayland, and DRM/GBM in one image, builds the official binary add-on tree by default, and publishes the common remote-control ports without changing Kodi's official service defaults.
 
 ## Scope
@@ -39,14 +41,14 @@ Run Kodi in Docker with Linux HDMI output. The image is built from the official 
 
 The deployment model is `compose.yaml` plus zero or more override files. In practice, users usually choose one display layer, optionally add one audio-runtime layer, and optionally add one network layer.
 
-| Layer | Required | File | Choices | Purpose |
-| --- | --- | --- | --- | --- |
-| Base | Yes | `compose.yaml` | exactly one | Common image, ports, `/config`, `/media`, `/dev/snd`, and environment defaults |
-| Display | Usually yes | `compose.x11.yaml` | `x11` | X11 socket, Xauthority mount, `/dev/dri`, `KODI_VIDEO_BACKEND=x11` |
-| Display | Usually yes | `compose.wayland.yaml` | `wayland` | Wayland runtime mount, `/dev/dri`, `KODI_VIDEO_BACKEND=wayland` |
-| Display | Usually yes | `compose.drm.yaml` | `drm` | GBM/DRM mode, `/dev/dri`, `/dev/input`, `/run/udev`, privileged compatibility settings |
-| Audio Runtime | Optional | `compose.audio-runtime.yaml` | `pulseaudio` or `pipewire` outside Wayland | Mounts host runtime dir and exports `PULSE_SERVER` / `XDG_RUNTIME_DIR` |
-| Network | Optional | `compose.network-host.yaml` | `host` | Switches from bridge publishing to host networking |
+| Layer         | Required    | File                         | Choices                                    | Purpose                                                                                |
+| ------------- | ----------- | ---------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| Base          | Yes         | `compose.yaml`               | exactly one                                | Common image, ports, `/config`, `/media`, `/dev/snd`, and environment defaults         |
+| Display       | Usually yes | `compose.x11.yaml`           | `x11`                                      | X11 socket, Xauthority mount, `/dev/dri`, `KODI_VIDEO_BACKEND=x11`                     |
+| Display       | Usually yes | `compose.wayland.yaml`       | `wayland`                                  | Wayland runtime mount, `/dev/dri`, `KODI_VIDEO_BACKEND=wayland`                        |
+| Display       | Usually yes | `compose.drm.yaml`           | `drm`                                      | GBM/DRM mode, `/dev/dri`, `/dev/input`, `/run/udev`, privileged compatibility settings |
+| Audio Runtime | Optional    | `compose.audio-runtime.yaml` | `pulseaudio` or `pipewire` outside Wayland | Mounts host runtime dir and exports `PULSE_SERVER` / `XDG_RUNTIME_DIR`                 |
+| Network       | Optional    | `compose.network-host.yaml`  | `host`                                     | Switches from bridge publishing to host networking                                     |
 
 Rules of thumb:
 
@@ -137,30 +139,30 @@ docker compose -f compose.yaml -f compose.x11.yaml up -d --build
 
 Use this table as the source of truth for `.env`. `Required` means you must set it for the relevant deployment mode; `Conditional` means it is only needed for specific backends or overrides.
 
-| Variable | Type | Required | Default | When to set / Notes |
-| --- | --- | --- | --- | --- |
-| `KODI_VERSION` | Build | Optional | `latest` | Build-time Kodi source version; use an exact upstream tag to pin builds |
-| `KODI_BUILD_BINARY_ADDONS` | Build | Optional | `1` | Set `0` to speed up local smoke builds |
-| `KODI_BUILD_JOBS` | Build | Optional | `0` | `0` means use all available CPU cores during local builds |
-| `IMAGE_TAG` | Common Env | Recommended | `main` | Select the prebuilt image tag such as `main`, `latest`, or a release tag |
-| `LOCAL_UID` | Common Env | Recommended | `1000` | Match the host user ID so `/config` and runtime files are owned correctly |
-| `LOCAL_GID` | Common Env | Recommended | `1001` | Match the host group ID |
-| `DISPLAY` | Common Env | Conditional | `:0` | Required for `compose.x11.yaml` |
-| `XAUTHORITY` | Common Env | Conditional | `/home/your-user/.Xauthority` | Required for X11 deployments that rely on Xauthority auth |
-| `WAYLAND_DISPLAY` | Common Env | Conditional | `wayland-0` | Required for `compose.wayland.yaml` unless your compositor already uses the default name |
-| `HOST_XDG_RUNTIME_DIR` | Common Env | Conditional | `/run/user/1000` | Required for Wayland and for `compose.audio-runtime.yaml` |
-| `KODI_VIDEO_BACKEND` | Common Env | Optional | `x11` | `x11`, `wayland`, or `drm`; should match the display layer you selected |
-| `KODI_AUDIO_BACKEND` | Common Env | Optional | `alsa` | `alsa`, `pulseaudio`, or `pipewire` |
-| `KODI_HTTP_PORT` | Common Env | Optional | `8080` | Host-side published port for Kodi web server |
-| `KODI_JSONRPC_PORT` | Common Env | Optional | `9090` | Host-side published TCP port used by remote-control clients |
-| `KODI_EVENTSERVER_PORT` | Common Env | Optional | `9777` | Host-side published UDP port for EventServer |
-| `KODI_SSDP_PORT` | Common Env | Optional | `1900` | Host-side published UDP port for UPnP/SSDP discovery |
-| `TZ` | Common Env | Optional | `UTC` | Container timezone |
-| `KODI_RENDERER` | Common Env | Optional | `auto` | Set `software` to force Mesa `llvmpipe` |
-| `KODI_EXTRA_ARGS` | Common Env | Optional | empty | Extra CLI arguments appended to the Kodi command |
-| `KODI_EXECUTABLE` | Common Env | Optional | empty | Override the auto-detected launcher if you need a specific Kodi binary |
-| `KODI_DRY_RUN` | Common Env | Optional | `0` | Set `1` to print the final command and exit |
-| `IMAGE_NAME` | Common Env | Optional | `ghcr.io/smallmain/kodi-docker` | Change only if you publish a fork to another registry path |
+| Variable                   | Type       | Required    | Default                         | When to set / Notes                                                                      |
+| -------------------------- | ---------- | ----------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
+| `KODI_VERSION`             | Build      | Optional    | `latest`                        | Build-time Kodi source version; use an exact upstream tag to pin builds                  |
+| `KODI_BUILD_BINARY_ADDONS` | Build      | Optional    | `1`                             | Set `0` to speed up local smoke builds                                                   |
+| `KODI_BUILD_JOBS`          | Build      | Optional    | `0`                             | `0` means use all available CPU cores during local builds                                |
+| `IMAGE_TAG`                | Common Env | Recommended | `main`                          | Select the prebuilt image tag such as `main`, `latest`, or a release tag                 |
+| `LOCAL_UID`                | Common Env | Recommended | `1000`                          | Match the host user ID so `/config` and runtime files are owned correctly                |
+| `LOCAL_GID`                | Common Env | Recommended | `1001`                          | Match the host group ID                                                                  |
+| `DISPLAY`                  | Common Env | Conditional | `:0`                            | Required for `compose.x11.yaml`                                                          |
+| `XAUTHORITY`               | Common Env | Conditional | `/home/your-user/.Xauthority`   | Required for X11 deployments that rely on Xauthority auth                                |
+| `WAYLAND_DISPLAY`          | Common Env | Conditional | `wayland-0`                     | Required for `compose.wayland.yaml` unless your compositor already uses the default name |
+| `HOST_XDG_RUNTIME_DIR`     | Common Env | Conditional | `/run/user/1000`                | Required for Wayland and for `compose.audio-runtime.yaml`                                |
+| `KODI_VIDEO_BACKEND`       | Common Env | Optional    | `x11`                           | `x11`, `wayland`, or `drm`; should match the display layer you selected                  |
+| `KODI_AUDIO_BACKEND`       | Common Env | Optional    | `alsa`                          | `alsa`, `pulseaudio`, or `pipewire`                                                      |
+| `KODI_HTTP_PORT`           | Common Env | Optional    | `8080`                          | Host-side published port for Kodi web server                                             |
+| `KODI_JSONRPC_PORT`        | Common Env | Optional    | `9090`                          | Host-side published TCP port used by remote-control clients                              |
+| `KODI_EVENTSERVER_PORT`    | Common Env | Optional    | `9777`                          | Host-side published UDP port for EventServer                                             |
+| `KODI_SSDP_PORT`           | Common Env | Optional    | `1900`                          | Host-side published UDP port for UPnP/SSDP discovery                                     |
+| `TZ`                       | Common Env | Optional    | `UTC`                           | Container timezone                                                                       |
+| `KODI_RENDERER`            | Common Env | Optional    | `auto`                          | Set `software` to force Mesa `llvmpipe`                                                  |
+| `KODI_EXTRA_ARGS`          | Common Env | Optional    | empty                           | Extra CLI arguments appended to the Kodi command                                         |
+| `KODI_EXECUTABLE`          | Common Env | Optional    | empty                           | Override the auto-detected launcher if you need a specific Kodi binary                   |
+| `KODI_DRY_RUN`             | Common Env | Optional    | `0`                             | Set `1` to print the final command and exit                                              |
+| `IMAGE_NAME`               | Common Env | Optional    | `ghcr.io/smallmain/kodi-docker` | Change only if you publish a fork to another registry path                               |
 
 ## Default Ports
 
