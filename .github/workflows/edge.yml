@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: edge-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/kodi-docker
   CACHE_SCOPE: kodi-docker
@@ -14,7 +18,21 @@ permissions:
   packages: write
 
 jobs:
+  resolve-kodi-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.kodi-version.outputs.version }}
+
+    steps:
+      - name: Resolve Kodi version
+        id: kodi-version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "version=$(gh api repos/xbmc/xbmc/releases/latest --jq .tag_name)" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: resolve-kodi-version
     strategy:
       fail-fast: false
       matrix:
@@ -61,6 +79,8 @@ jobs:
         with:
           context: .
           platforms: ${{ matrix.platform }}
+          build-args: |
+            KODI_VERSION=${{ needs.resolve-kodi-version.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.IMAGE_NAME }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true

@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -16,6 +20,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Resolve Kodi version
+        id: kodi-version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "version=$(gh api repos/xbmc/xbmc/releases/latest --jq .tag_name)" >> "$GITHUB_OUTPUT"
 
       - name: Prepare placeholders
         run: |
@@ -65,7 +76,7 @@ jobs:
           load: true
           push: false
           build-args: |
-            KODI_VERSION=latest
+            KODI_VERSION=${{ steps.kodi-version.outputs.version }}
             KODI_BUILD_BINARY_ADDONS=0
           tags: kodi-docker:ci
 
