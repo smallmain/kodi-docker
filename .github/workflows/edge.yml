@@ -18,6 +18,9 @@ permissions:
   packages: write
 
 jobs:
+  # Keep the main tag publishing path for ordinary pushes to main.
+  # The scheduled auto-release workflow publishes main/latest/release tags
+  # directly because GITHUB_TOKEN-driven pushes do not trigger follow-up workflows.
   resolve-kodi-version:
     runs-on: ubuntu-latest
     outputs:

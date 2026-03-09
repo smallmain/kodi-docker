@@ -37,6 +37,19 @@ Run Kodi in Docker with Linux HDMI output. The image is built from the official 
 4. Adjust `LOCAL_UID`, `LOCAL_GID`, display variables, and runtime directory paths for your host.
 5. Start the combination you need with the Compose overrides below.
 
+<!-- BEGIN GENERATED RELEASE MATRIX -->
+
+## Image Tags And Kodi Versions
+
+`main` tracks direct builds from the `main` branch and is intentionally excluded from this table. `latest` always points to the newest numbered repository release. Numbered image tags such as `1.0.0` are repository release versions, not upstream Kodi versions.
+
+| Image tag | Repository release | Kodi version | Published |
+| --- | --- | --- | --- |
+| `latest` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
+| `1.0.0` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
+
+<!-- END GENERATED RELEASE MATRIX -->
+
 ## Compose Layers
 
 The deployment model is `compose.yaml` plus zero or more override files. In practice, users usually choose one display layer, optionally add one audio-runtime layer, and optionally add one network layer.
@@ -213,8 +226,10 @@ docker run --rm \
 
 - Pull requests and pushes to `main` run shell, Dockerfile, Compose, and smoke-build checks.
 - CI smoke builds disable binary add-on compilation to keep verification time reasonable.
+- A daily automation checks the upstream Kodi release feed, creates a new numbered repository release when needed, and refreshes the generated release matrix in both README files.
 - Pushes to `main` publish `ghcr.io/<owner>/kodi-docker:main`.
-- Tags matching `v*` publish `ghcr.io/<owner>/kodi-docker:vX.Y.Z` and `latest`.
+- Tags matching `v*` rebuild `ghcr.io/<owner>/kodi-docker:X.Y.Z` from the exact Kodi version recorded in `.github/kodi-release-map.json`.
+- `latest` always points to the numbered release recorded as current latest in the generated release matrix.
 
 ## Sources
 

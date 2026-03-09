@@ -37,6 +37,19 @@
 4. 按宿主机环境修改 `LOCAL_UID`、`LOCAL_GID`、显示相关变量和运行时目录路径。
 5. 用下面的 Compose 组合启动你需要的模式。
 
+<!-- BEGIN GENERATED RELEASE MATRIX -->
+
+## 镜像标签与 Kodi 版本
+
+`main` 跟随 `main` 分支的直接构建，因此故意不放进这张表。`latest` 始终指向当前最新的编号 release。像 `1.0.0` 这样的编号表示仓库 release 版本，不是 Kodi 上游原生版本。
+
+| 镜像标签 | 仓库 Release | Kodi 版本 | 发布时间 |
+| --- | --- | --- | --- |
+| `latest` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
+| `1.0.0` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
+
+<!-- END GENERATED RELEASE MATRIX -->
+
 ## Compose 分层
 
 当前部署模型是 `compose.yaml` 加上若干覆盖文件。实际使用时，通常是固定带上基础层，再选一个显示层，按需叠加音频运行时层和网络层。
@@ -213,8 +226,10 @@ docker run --rm \
 
 - PR 和推送到 `main` 时会执行 shell、Dockerfile、Compose 和镜像 smoke build 校验。
 - CI 的 smoke build 会关闭二进制 add-on 编译，避免验证耗时过长。
+- 每天会有一个自动化流程检查 Kodi 上游 release；一旦发现新的正式版，就会创建新的仓库编号 release，并同步刷新双语 README 中生成的版本对照表。
 - 推送到 `main` 会发布 `ghcr.io/<owner>/kodi-docker:main`。
-- 推送符合 `v*` 的 tag 会发布 `ghcr.io/<owner>/kodi-docker:vX.Y.Z` 和 `latest`。
+- 推送符合 `v*` 的 tag 会按照 `.github/kodi-release-map.json` 中记录的精确 Kodi 版本重建 `ghcr.io/<owner>/kodi-docker:X.Y.Z`。
+- `latest` 始终跟随版本对照表中标记为当前最新的编号 release。
 
 ## 参考来源
 

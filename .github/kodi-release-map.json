@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "latest_release": "1.0.0",
+  "releases": [
+    {
+      "release_version": "1.0.0",
+      "git_tag": "v1.0.0",
+      "kodi_version": "21.3-Omega",
+      "published_at": "2026-03-09T09:50:32+08:00"
+    }
+  ]
+}

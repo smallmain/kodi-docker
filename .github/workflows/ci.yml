@@ -21,6 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Verify generated release matrix
+        run: |
+          python3 .github/scripts/render_release_matrix.py --check
+
       - name: Resolve Kodi version
         id: kodi-version
         env:
