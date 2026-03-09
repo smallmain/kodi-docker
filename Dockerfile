@@ -50,7 +50,6 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*; \
     locale-gen C.UTF-8
 
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN set -eux; \
     resolved_kodi_ref="${KODI_VERSION}"; \
     if [[ "${resolved_kodi_ref}" == "latest" ]]; then \
@@ -72,9 +71,11 @@ RUN set -eux; \
     fi; \
     install -d /usr/local/share/kodi-build; \
     printf '%s\n' "${resolved_kodi_ref}" > /usr/local/share/kodi-build/kodi-ref; \
-    chmod 0755 /usr/local/bin/entrypoint.sh; \
     mkdir -p /config /media; \
     rm -rf /usr/src/kodi /usr/src/kodi-build
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod 0755 /usr/local/bin/entrypoint.sh
 
 ENV HOME=/config
 ENV LANG=C.UTF-8
