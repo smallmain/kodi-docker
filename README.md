@@ -43,10 +43,10 @@ Run Kodi in Docker with Linux HDMI output. The image is built from the official 
 
 `main` tracks direct builds from the `main` branch and is intentionally excluded from this table. `latest` always points to the newest numbered repository release. Numbered image tags such as `1.0.0` are repository release versions, not upstream Kodi versions.
 
-| Image tag | Repository release | Kodi version | Published |
-| --- | --- | --- | --- |
-| `latest` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
-| `1.0.0` | `v1.0.0` | `21.3-Omega` | 2026-03-09 |
+| Image tag | Repository release | Kodi version | Published  |
+| --------- | ------------------ | ------------ | ---------- |
+| `latest`  | `v1.0.0`           | `21.3-Omega` | 2026-03-09 |
+| `1.0.0`   | `v1.0.0`           | `21.3-Omega` | 2026-03-09 |
 
 <!-- END GENERATED RELEASE MATRIX -->
 
